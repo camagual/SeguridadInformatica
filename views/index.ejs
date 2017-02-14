@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Bootstrap Login Form Template</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+
+    </head>
+    <body>
+      <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+          <h1 class="display-3">Eventos</h1>
+          <p class="lead">Los eventos presentados acontinuacion pertenecen en la ciudad de <%= city %></p>
+        </div>
+      </div>
+      <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+        <button  class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!--<a class="navbar-brand" href="#">Navbar</a>-->
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Link</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/users/logout">Logout</a>
+            </li>
+          </ul>
+          <form id="searchForm" class="form-inline my-2 my-lg-0">
+            <input id="searchInput" class="form-control mr-sm-2" type="text" placeholder="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+          </form>
+        </div>
+      </nav>
+      <!-- Top content -->
+      <div class="container">
+        <table id="events" class="table">
+          <thead class="thead-inverse">
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th>Fecha</th>
+              <th>Direccion</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% events.forEach(function(event){ %>
+              <tr>
+                <td><%= event.id %></td>
+                <td><a href="/users/<%= event.id %>"><%= event.name %></a></td>
+                <td><%= event.date %></td>
+                <td><%= event.address %></td>
+              </tr>
+            <%}) %>
+          </tbody>
+        </table>
+      </div>
+      <!--<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>-->
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+      <script>
+      jQuery(document).ready(function(){
+
+        $("#searchForm").on('submit',function(event){
+
+          event.preventDefault();
+          var query = $("#searchInput").val();
+          console.log(" Value :",query);
+          basicAjaxRequest(query,'/users/search','POST',function(error,result){
+            if(error){
+              console.log(" Exist un error");
+              return;
+            }
+
+            console.log(" Events :",JSON.stringify(result.events));
+            cleanTable();
+            fillEventTable(result.events);
+
+          })
+        })
+        function basicAjaxRequest(values,apiName,method,onSuccess){
+
+          var path = apiName;
+          $.ajax({
+                url      : path,
+                method   : method,
+                dataType : "json",
+                data     : { query: values },
+                success  : function(respObj){
+                  return onSuccess(null,respObj);
+                } ,
+                error    : function(error){
+                  return onSuccess(error);
+                }
+          })
+        }
+        function cleanTable(){
+          $("#events > tbody").empty();
+        }
+        function fillEventTable(events){
+            events.map(function(event){
+              $("#events").append("<tr><td>"+event.id+"</td><td>"+event.name+"</td><td>"+event.description+"</td><td>"+event.address+"</td></tr>")
+            })
+        }
+      })
+      </script>
+    </body>
+</html>
