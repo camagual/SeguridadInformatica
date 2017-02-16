@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var sql = require('../lib/sql.js');
+var sanitizeHtml = require('sanitize-html');
 
 /* GET users listing. */
 router.get('/',function(req,res,next){
@@ -73,10 +74,14 @@ router.get('/coment/:eventId',function(req,res,next){
 
 router.post('/comment',function(req,res,next){
 
-  console.log(" Data :",req.body)
+
   const eventId = req.body.eventId;
   const userId  = req.session.user.id;
-  const commentary = req.body.commentary;
+  const commentary = sanitizeHtml(req.body.commentary);
+
+  if(commentary.trim().length==0){
+    return res.json({ code:'ok', message: 'Request Successfully'});
+  }
 
   sql.saveComment({ commentary, userId, eventId },function(error,result){
     if(error){

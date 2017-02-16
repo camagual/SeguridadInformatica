@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var engine = require('ejs');
 var session = require('express-session');
-var lusca = require('lusca');
+var expressSanitized = require('express-sanitize-escape');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -23,12 +23,13 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(expressSanitized.middleware()); // this line follows app.use(bodyParser.json) or the last body parser middleware
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret: 'ssshhhhh'}));
-//app.use(lusca.xssProtection(true));
+
 
 app.use('/', index);
 app.use('/users', sessionCheck, users);
