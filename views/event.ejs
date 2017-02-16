@@ -77,20 +77,6 @@
                 <hr>
                 <div id="comments">
                   <!-- Posted Comments -->
-                  <% event.comments.forEach(function( comment ){%>
-                  <!-- Comment -->
-                  <div class="media">
-                      <a class="pull-left" href="#">
-                          <img class="media-object" src="http://placehold.it/64x64" alt="">
-                      </a>
-                      <div class="media-body">
-                          <h4 class="media-heading"><%= comment.firstName%> <%= comment.lastName%>
-                              <small><%= comment.date %></small>
-                          </h4>
-                          <%= comment.description %>
-                      </div>
-                  </div>
-                  <% }) %>
                 </div>
 
             </div>
@@ -123,6 +109,9 @@
       var eventId = <%= event.id %>;
 
       jQuery(document).ready(function(){
+
+        getComments();
+
         $("#commentaryForm").on('submit',function(event){
           event.preventDefault();
           var commentary = $("#commentaryInput").val();
@@ -138,6 +127,42 @@
           })
         })
       })
+
+      function getComments(){
+          var api = '/users/coment/'+eventId;
+          basicAjaxRequest('',api,'GET',function(error,result){
+            if(error){
+              console.log("Server Error");
+              return;
+            }
+            var comments = result.comments;
+            console.log("Esto es una prueba comments :",comments);
+            renderComments(comments);
+            return;
+          })
+      }
+
+      function renderComments(comments){
+        comments.map(function(comment){
+          var commentBlock = createCommentBlock(comment);
+          $("#comments").append(commentBlock);
+        })
+      }
+
+      function createCommentBlock(comment){
+        var html = '<div class="media">'+
+                   '<a class="pull-left" href="#">'+
+                    '<img class="media-object" src="http://placehold.it/64x64" alt="">'+
+                    '</a>'+
+                      '<div class="media-body">'+
+                          '<h4 class="media-heading">'+comment.firstName+' '+comment.lastName+
+                              '<small>'+comment.date+'</small>'+
+                          '</h4>'+comment.description+'</div>'+
+                  '</div>';
+        return html;
+      }
+
+
       function basicAjaxRequest(values,apiName,method,onSuccess){
           console.log("Commentary :",values);
         var path = apiName;

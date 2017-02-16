@@ -50,19 +50,25 @@ router.get('/:eventId',function(req,res,next){
     if(error){
       return res.redirect('/users');
     }
-
     let event = events[0];
-
-    sql.getCommnetariesByEvent(eventId,function(err,comments){
-      if(err){
-        return res.render('event',{ event })
-      }
-
-      event.comments = comments;
-      console.log("Eventos :",event)
-      return res.render('event',{ event });
-    })
+    return res.render('event',{ event });
   })
+})
+
+router.get('/coment/:eventId',function(req,res,next){
+
+  const eventId = req.params.eventId;
+  const userSession = req.session.user;
+
+  sql.getCommnetariesByEvent(eventId,function(error,comments){
+    if(error){
+      return res.json({ comments:[] });
+    }
+
+    console.log("Eventos :",comments)
+    return res.json({ comments });
+  })
+
 })
 
 router.post('/comment',function(req,res,next){

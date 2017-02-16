@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var engine = require('ejs');
 var session = require('express-session');
+var lusca = require('lusca');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -27,6 +28,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret: 'ssshhhhh'}));
+//app.use(lusca.xssProtection(true));
 
 app.use('/', index);
 app.use('/users', sessionCheck, users);
